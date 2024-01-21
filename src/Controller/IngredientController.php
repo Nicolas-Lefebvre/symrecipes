@@ -31,7 +31,7 @@ class IngredientController extends AbstractController
         );
 
         return $this->render('pages/ingredient/index.html.twig', [
-            'ingredients' => []
+            'ingredients' => $ingredients
         ]);
     }
 }
