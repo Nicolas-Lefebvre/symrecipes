@@ -17,7 +17,7 @@ class IngredientController extends AbstractController
 {
 
     /**
-     * This function displays all ingredients
+     * This controller displays all ingredients
      *
      * @param IngredientRepository $repository
      * @param PaginatorInterface $paginator
@@ -39,6 +39,13 @@ class IngredientController extends AbstractController
         ]);
     }
 
+    /**
+     * Thiscontroller showa form which edits an ingredient
+     *
+     * @param Request $request
+     * @param EntityManagerInterface $manager
+     * @return Response
+     */
     #[Route('/ingredient/nouveau', name: 'ingredient.new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
@@ -65,6 +72,38 @@ class IngredientController extends AbstractController
         }
 
         return $this->render('pages/ingredient/new.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    #[Route('/ingredient/edition/{id}', name: 'ingredient.edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Ingredient $ingredient,
+        Request $request,
+        EntityManagerInterface $manager
+        ) : Response
+    {
+        // Pour que le param converter fonctionne (cad mettre Ingredient directement en params et que Symfony comprenne qu'il s'agit de l'id de l'ingrédient,
+        // il faut s'assurer que la ligne Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true]) est bien présente dans config/bundles.php
+        // Si ce n'est pas le cas, il faut l'installer avec composer require sensio/framework-extra-bundle
+        $form = $this->createForm(IngredientType::class, $ingredient);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()) {
+            $ingredient = $form->getData();
+            
+            $manager->persist($ingredient);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                'Votre ingrédient a bien été modifié !'
+            );
+
+            return $this->redirectToRoute('ingredient.index');
+
+        }
+
+        return $this->render('pages/ingredient/edit.html.twig', [
             'form' => $form->createView()
         ]);
     }

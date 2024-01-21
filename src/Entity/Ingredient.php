@@ -14,8 +14,8 @@ class Ingredient
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'integer')]
+    private ?int $id;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank()]
